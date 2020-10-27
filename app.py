@@ -131,7 +131,7 @@ class corona(Resource):
         }
 
 class home(Resource):
-    def get():
+    def get(self):
         return {
             "list": {
                 "music": "/music",
