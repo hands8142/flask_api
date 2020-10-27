@@ -74,70 +74,88 @@ class weather(Resource):
 
 class music(Resource):
     def get(self):
-        targetSite = 'https://www.melon.com/chart/index.htm'
-        header = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'}
-        melonrqRetry = rq.get(targetSite, headers=header)
-        melonht = melonrqRetry.text
-        melonsp = bs(melonht, 'html.parser')
-        artists = melonsp.findAll('span', {'class': 'checkEllipsis'})
-        titles = melonsp.findAll('div', {'class': 'ellipsis rank01'})
-        for i in range(len(titles)):
-            artist = artists[i].text.strip()
-            title = titles[i].text.strip()
-            base_music[i + 1] = '{0} - {1}'.format(artist, title)
-        return base_music
+        try:
+            targetSite = 'https://www.melon.com/chart/index.htm'
+            header = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'}
+            melonrqRetry = rq.get(targetSite, headers=header)
+            melonht = melonrqRetry.text
+            melonsp = bs(melonht, 'html.parser')
+            artists = melonsp.findAll('span', {'class': 'checkEllipsis'})
+            titles = melonsp.findAll('div', {'class': 'ellipsis rank01'})
+            for i in range(len(titles)):
+                artist = artists[i].text.strip()
+                title = titles[i].text.strip()
+                base_music[i + 1] = '{0} - {1}'.format(artist, title)
+            return base_music
+        except:
+            return {
+                "success": False,
+                "message": "음악 차트를 가지고 올수 없습니다."
+            }
 
 class naver(Resource):
     def get(self):
-        targetSite = 'https://datalab.naver.com/keyword/realtimeList.naver?groupingLevel=3&where=main'
-        header = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'}
-        source = rq.get(targetSite, headers=header).text
-        soup = bs(source, "html.parser")
-        hotKeys = soup.select("span.item_title")
-        index = 0
-        for key in hotKeys:
-            index += 1
-            base_naver[index] = key.text
-        return base_naver
+        try:
+            targetSite = 'https://datalab.naver.com/keyword/realtimeList.naver?groupingLevel=3&where=main'
+            header = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'}
+            source = rq.get(targetSite, headers=header).text
+            soup = bs(source, "html.parser")
+            hotKeys = soup.select("span.item_title")
+            index = 0
+            for key in hotKeys:
+                index += 1
+                base_naver[index] = key.text
+            return base_naver
+        except:
+            return {
+                "success": False,
+                "message": "실시간 검색어를 가지고 올수 없습니다."
+            }
 
 class corona(Resource):
     def get(self):
-        covidSite = "http://ncov.mohw.go.kr/index.jsp"
-        covidNotice = "http://ncov.mohw.go.kr"
-        html = urlopen(covidSite)
-        soup = bs(html, 'html.parser')
-        latestupdateTime = soup.find('span', {'class': "livedate"}).text.split(',')[0][1:].split('.')
-        statisticalNumbers = soup.findAll('span', {'class': 'num'})
-        beforedayNumbers = soup.findAll('span', {'class': 'before'})
+        try:
+            covidSite = "http://ncov.mohw.go.kr/index.jsp"
+            covidNotice = "http://ncov.mohw.go.kr"
+            html = urlopen(covidSite)
+            soup = bs(html, 'html.parser')
+            latestupdateTime = soup.find('span', {'class': "livedate"}).text.split(',')[0][1:].split('.')
+            statisticalNumbers = soup.findAll('span', {'class': 'num'})
+            beforedayNumbers = soup.findAll('span', {'class': 'before'})
 
-        briefTasks = []
-        mainbrief = soup.findAll('a', {'href': re.compile('\/tcmBoardView\.do\?contSeq=[0-9]*')})
-        for brf in mainbrief:
-            container = []
-            container.append(brf.text)
-            container.append(covidNotice + brf['href'])
-            briefTasks.append(container)
+            briefTasks = []
+            mainbrief = soup.findAll('a', {'href': re.compile('\/tcmBoardView\.do\?contSeq=[0-9]*')})
+            for brf in mainbrief:
+                container = []
+                container.append(brf.text)
+                container.append(covidNotice + brf['href'])
+                briefTasks.append(container)
 
-        statNum = []
-        beforeNum = []
-        for num in range(7):
-            statNum.append(statisticalNumbers[num].text)
-        for num in range(4):
-            beforeNum.append(beforedayNumbers[num].text.split('(')[-1].split(')')[0])
+            statNum = []
+            beforeNum = []
+            for num in range(7):
+                statNum.append(statisticalNumbers[num].text)
+            for num in range(4):
+                beforeNum.append(beforedayNumbers[num].text.split('(')[-1].split(')')[0])
 
-        totalPeopletoInt = statNum[0].split(')')[-1].split(',')
-        tpInt = ''.join(totalPeopletoInt)
-        lethatRate = round((int(statNum[3]) / int(tpInt)) * 100, 2)
-        return {
-            "success": True,
-            "time": latestupdateTime[0] + "월 " + latestupdateTime[1] + "일 " + latestupdateTime[2],
-            "확진환자": statNum[0].split(')')[-1] + "(" + beforeNum[0] + ")",
-            "완치환자": statNum[1] + "(" + beforeNum[1] + ")",
-            "치료중": statNum[2] + "(" + beforeNum[2] + ")",
-            "사망": statNum[3] + "(" + beforeNum[3] + ")",
-            "누적확진률": statNum[6],
-            "치사율": str(lethatRate) + " %"
-        }
+            totalPeopletoInt = statNum[0].split(')')[-1].split(',')
+            tpInt = ''.join(totalPeopletoInt)
+            lethatRate = round((int(statNum[3]) / int(tpInt)) * 100, 2)
+            return {
+                "success": True,
+                "time": latestupdateTime[0] + "월 " + latestupdateTime[1] + "일 " + latestupdateTime[2],
+                "확진환자": statNum[0].split(')')[-1] + "(" + beforeNum[0] + ")",
+                "완치환자": statNum[1] + "(" + beforeNum[1] + ")",
+                "치료중": statNum[2] + "(" + beforeNum[2] + ")",
+                "사망": statNum[3] + "(" + beforeNum[3] + ")",
+                "누적확진률": statNum[6],
+                "치사율": str(lethatRate) + " %"
+            }
+        except:
+            return {
+                "success": False,
+                "message": "코로나 정보를 가지고 올수 없습니다."
+            }
 
 class home(Resource):
     def get(self):
