@@ -128,6 +128,13 @@ def corona():
         "치사율": str(lethatRate) + " %"
     }
 
-@app.route('/test')
-def test():
-    return {"message": "hello world"}
+@app.route('/')
+def home():
+    return {
+        "list": {
+            "music": "/music",
+            "corona": "/corona",
+            "naver": "/naver",
+            "weather": "/weather/<location>"
+            }
+        }
