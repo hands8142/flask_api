@@ -1,12 +1,10 @@
-from flask import Flask, jsonify
-from flask_restful import Api, Resource
+from flask import Flask
 from bs4 import BeautifulSoup as bs
 import requests as rq
 import re
 from urllib.request import urlopen
 
 app = Flask(__name__)
-api = Api(app=app)
 
 base_music = {}
 base_naver = {}
