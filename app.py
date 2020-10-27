@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_restful import Api, Resource
 from bs4 import BeautifulSoup as bs
+from urllib.request import urlopen
 import requests as rq
 import re
-from urllib.request import urlopen
 
 app = Flask(__name__)
 api = Api(app)
