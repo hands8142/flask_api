@@ -133,6 +133,3 @@ def corona():
 @app.route('/test')
 def test():
     return {"message": "hello world"}
-
-if __name__ == "__main__":
-    app.run()
