@@ -34,7 +34,7 @@ class weather(Resource):
         if 'None' in str(ErrorCheck):
             return {
                 "success": False,
-                "error" : "오류"
+                "error" : "지역의 날씨를 찾을수 없습니다."
                 }, 400
         else:
             # 지역 정보
