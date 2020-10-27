@@ -8,8 +8,12 @@ import re
 app = Flask(__name__)
 api = Api(app)
 
-base_music = {}
-base_naver = {}
+base_music = {
+    "success": True
+}
+base_naver = {
+    "success": True
+}
 
 class weather(Resource):
     def get(self, location):
@@ -28,7 +32,10 @@ class weather(Resource):
         ErrorCheck = soup.find('span', {'class': 'btn_select'})
 
         if 'None' in str(ErrorCheck):
-            return {"error" : "오류"}, 400
+            return {
+                "success": False,
+                "error" : "오류"
+                }, 400
         else:
             # 지역 정보
             for i in soup.select('span[class=btn_select]'):
@@ -53,6 +60,7 @@ class weather(Resource):
             UltraFineDust = CheckDust[1][:-2] + " " + CheckDust[1][-2:]
             Ozon = CheckDust[2][:-2] + " " + CheckDust[2][-2:]
             return {
+                "success": True,
                 "지역": LocationInfo,
                 "현재온도": NowTemp,
                 "체감온도": TodayFeelTemp,
@@ -121,6 +129,7 @@ class corona(Resource):
         tpInt = ''.join(totalPeopletoInt)
         lethatRate = round((int(statNum[3]) / int(tpInt)) * 100, 2)
         return {
+            "success": True,
             "time": latestupdateTime[0] + "월 " + latestupdateTime[1] + "일 " + latestupdateTime[2],
             "확진환자": statNum[0].split(')')[-1] + "(" + beforeNum[0] + ")",
             "완치환자": statNum[1] + "(" + beforeNum[1] + ")",
