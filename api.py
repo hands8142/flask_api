@@ -130,5 +130,9 @@ def corona():
         "치사율": str(lethatRate) + " %"
     }
 
+@app.route('/test')
+def test():
+    return {"message": "hello world"}
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True)
