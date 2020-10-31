@@ -233,6 +233,7 @@ class pokemon(Resource):
             poke = client.get_pokemon(str(pokename))
             return {
                 "success": True,
+                "이름": poke.name,
                 "url": f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{poke.id}.png",
                 "채력": poke.stats[0].base_stat,
                 "공격력": poke.stats[1].base_stat,
