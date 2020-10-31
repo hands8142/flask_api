@@ -26,3 +26,4 @@ urllib3==1.25.11
 Werkzeug==1.0.1
 wincertstore==0.2
 wrapt==1.12.1
+pokepy==0.6.1
