@@ -1,12 +1,18 @@
 from flask import Flask
 from flask_restful import Api, Resource
 from bs4 import BeautifulSoup as bs
-from urllib.request import urlopen
+from urllib.request import urlopen, Request, HTTPError
+from urllib.parse import quote
 import requests as rq
 import re
+import json
+import pokepy
 
 app = Flask(__name__)
 api = Api(app)
+
+client_id = "YeOVJk0bK59ryYiRDIiY"
+client_secret = "ZBHDeMCaMe"
 
 base_music = {
     "success": True
@@ -14,6 +20,13 @@ base_music = {
 base_naver = {
     "success": True
 }
+
+@app.errorhandler(404)
+def error(e):
+    return {
+        "success": False,
+        "message": "페이지를 찾을수 없습니다.: " + str(e)
+        }
 
 class weather(Resource):
     def get(self, location):
@@ -157,6 +170,84 @@ class corona(Resource):
                 "message": "코로나 정보를 가지고 올수 없습니다."
             }
 
+class translation(Resource):
+    def get(self, source, target, trsText):
+        baseurl = "https://openapi.naver.com/v1/papago/n2mt"
+        try:
+            if len(trsText) == 1:
+                return {
+                    "success": False,
+                    "message": "단어 혹은 문장이 입력되지 않았어요. 다시한번 확인해주세요."
+                    }
+            else:
+                combineword = ""
+                for word in trsText:
+                    combineword += "" + word
+                # if entered value is sentence, assemble again and strip blank at both side
+                savedCombineword = combineword.strip()
+                combineword = quote(savedCombineword)
+                print(combineword)
+                # Make Query String.
+                dataParmas = "source=" + source +"&target=" + target + "&text=" + combineword
+                # Make a Request Instance
+                request = Request(baseurl)
+                # add header to packet
+                request.add_header("X-Naver-Client-Id", client_id)
+                request.add_header("X-Naver-Client-Secret", client_secret)
+                response = urlopen(request, data=dataParmas.encode("utf-8"))
+
+                responsedCode = response.getcode()
+                if (responsedCode == 200):
+                    response_body = response.read()
+                    # response_body -> byte string : decode to utf-8
+                    api_callResult = response_body.decode('utf-8')
+                    # JSON data will be printed as string type. So need to make it back to type JSON(like dictionary)
+                    api_callResult = json.loads(api_callResult)
+                    # Final Result
+                    translatedText = api_callResult['message']['result']["translatedText"]
+                    return {
+                        "success": True,
+                        "before": savedCombineword,
+                        "after": translatedText
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "message": "Error Code : " + responsedCode
+                        }
+        except HTTPError as e:
+            return {
+                "success": False,
+                "message": "Translate Failed. HTTPError Occured."
+            }
+
+class pokemon(Resource):
+    def get(self, pokename):
+        try:
+            if len(pokename) == 1:
+                return {
+                    "success": False,
+                    "message": "포켓몬 이름이 입력되지 않았습니다!"
+                }
+            client = pokepy.V2Client()
+            poke = client.get_pokemon(str(pokename))
+            return {
+                "success": True,
+                "url": f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{poke.id}.png",
+                "채력": poke.stats[0].base_stat,
+                "공격력": poke.stats[1].base_stat,
+                "방어력": poke.stats[2].base_stat,
+                "특수 공격": poke.stats[3].base_stat,
+                "특수 방어": poke.stats[4].base_stat,
+                "스피드": poke.stats[5].base_stat,
+                "타입": ", ".join(ty.type.name for ty in poke.types)
+            }
+        except:
+            return {
+                "success": False,
+                "message": "포켓몬 정보를 불러오는데 실패했습니다."
+            }
+
 class home(Resource):
     def get(self):
         return {
@@ -164,7 +255,8 @@ class home(Resource):
                 "music": "/music",
                 "corona": "/corona",
                 "naver": "/naver",
-                "weather": "/weather/<location>"
+                "weather": "/weather/<location>",
+                "translation": "/translation/<source>/<target>/<trsText>"
                 }
             }
 
@@ -172,7 +264,9 @@ api.add_resource(weather, "/weather/<location>")
 api.add_resource(music, "/music")
 api.add_resource(naver, "/naver")
 api.add_resource(corona, "/corona")
+api.add_resource(translation, "/translation/<source>/<target>/<trsText>")
+api.add_resource(pokemon, "/pokemon/<pokename>")
 api.add_resource(home, "/")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=80, debug=True)
