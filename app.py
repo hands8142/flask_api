@@ -256,7 +256,8 @@ class home(Resource):
                 "corona": "/corona",
                 "naver": "/naver",
                 "weather": "/weather/<location>",
-                "translation": "/translation/<source>/<target>/<trsText>"
+                "translation": "/translation/<source>/<target>/<trsText>",
+                "pokemon": "/pokemon/<pokename>"
                 }
             }
 
