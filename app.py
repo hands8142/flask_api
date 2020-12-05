@@ -9,6 +9,7 @@ import json
 import pokepy
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 api = Api(app)
 
 client_id = "YeOVJk0bK59ryYiRDIiY"
