@@ -9,6 +9,7 @@ import json
 import pokepy
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 api = Api(app)
 
 client_id = "YeOVJk0bK59ryYiRDIiY"
@@ -82,7 +83,7 @@ class weather(Resource):
                 "최저최고온도" : f"{TodayMorningTemp}/{TodayAfternoonTemp}",
                 "미세먼지": FineDust,
                 "초미세먼지": UltraFineDust,
-                "오존 지수": Ozon
+                "오존지수": Ozon
                 }
 
 class music(Resource):
