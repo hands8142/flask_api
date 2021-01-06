@@ -153,7 +153,7 @@ class corona(Resource):
 
             totalPeopletoInt = statNum[0].split(')')[-1].split(',')
             tpInt = ''.join(totalPeopletoInt)
-            lethatRate = round((int(statNum[3]) / int(tpInt)) * 100, 2)
+            lethatRate = round((int(statNum[3].replace(",", "")) / int(tpInt)) * 100, 2)
             return {
                 "success": True,
                 "time": latestupdateTime[0] + "월 " + latestupdateTime[1] + "일 " + latestupdateTime[2],
