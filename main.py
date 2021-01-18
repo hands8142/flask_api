@@ -8,7 +8,7 @@ import json
 import pokepy
 import uvicorn
 
-app = FastAPI(title="mayyapi", description="많은 양의 api를 보여줍니다 꾸준히 업대이트 중입니다.", version="1.0.0", docs_url="/")
+app = FastAPI(title="manyyapi", description="많은 양의 api를 보여줍니다 꾸준히 업대이트 중입니다.", version="1.0.0", docs_url="/")
 
 client_id = "YeOVJk0bK59ryYiRDIiY"
 client_secret = "ZBHDeMCaMe"
