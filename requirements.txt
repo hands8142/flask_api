@@ -11,3 +11,4 @@ six
 soupsieve
 starlette
 uvicorn
+gunicorn
