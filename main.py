@@ -98,25 +98,6 @@ def music():
             "message": "음악 차트를 가지고 올수 없습니다."
         }
 
-@app.get("/naver", tags=["api"])
-def naver():
-    try:
-        targetSite = 'https://datalab.naver.com/keyword/realtimeList.naver?groupingLevel=3&where=main'
-        header = {'User-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko'}
-        source = rq.get(targetSite, headers=header).text
-        soup = bs(source, "html.parser")
-        hotKeys = soup.select("span.item_title")
-        index = 0
-        for key in hotKeys:
-            index += 1
-            base_naver[index] = key.text
-        return base_naver
-    except:
-        return {
-            "success": False,
-            "message": "실시간 검색어를 가지고 올수 없습니다."
-        }
-
 @app.get("/corona", tags=["api"])
 def corona():
     try:
