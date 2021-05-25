@@ -204,6 +204,7 @@ async def pokemon(pokename: str):
             }
         client = pokepy.V2Client()
         poke = client.get_pokemon(pokename)[0]
+        print(poke)
         return {
             "success": True,
             "이름": poke.name,
