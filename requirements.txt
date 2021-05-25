@@ -1,7 +1,7 @@
 bs4
-urllib3=1.26.4
-requests=2.25.1
-fastapi=0.65.1
-uvicorn=0.13.4
-gunicorn=20.1.0
-pokepy=0.6.2
+urllib3==1.26.4
+requests==2.25.1
+fastapi==0.65.1
+uvicorn==0.13.4
+gunicorn==20.1.0
+pokepy==0.6.2
